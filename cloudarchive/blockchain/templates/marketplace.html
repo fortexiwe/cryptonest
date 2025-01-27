@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Биржа</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #2b2d42, #1e202f);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .balance-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .balance-container h3 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #ffd700;
+        }
+
+        .balance-container .token-info {
+            font-size: 1.2em;
+            color: #ff7f50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table th, table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        table th {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffd700;
+            text-transform: uppercase;
+        }
+
+        table tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .button {
+            padding: 8px 15px;
+            text-transform: uppercase;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .buy-button {
+            background: #4caf50;
+            color: #fff;
+        }
+
+        .sell-button {
+            background: #f44336;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Баланс пользователя -->
+        <div class="balance-container">
+            <h3>Ваш баланс</h3>
+            <div class="token-info">
+                <p>CLT: <strong>{{ user_tokens.CLT }}</strong></p>
+                <p>NBM: <strong>{{ user_tokens.NBM }}</strong></p>
+            </div>
+        </div>
+
+        <!-- Покупка -->
+        <h2>Покупка</h2>
+        <table>
+            <tr>
+                <th>Пользователь</th>
+                <th>Количество</th>
+                <th>Цена за монету</th>
+                <th>Действие</th>
+            </tr>
+            {% for order in buy_orders %}
+            <tr>
+                <td>{{ order.user }}</td>
+                <td>{{ order.amount }}</td>
+                <td class="green">{{ order.price_per_unit }}</td>
+                <td>
+                    <form action="{% url 'fulfill_order' order.id %}" method="POST">
+                        {% csrf_token %}
+                        <button class="button sell-button" type="submit">Продать</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <!-- Продажа -->
+        <h2>Продажа</h2>
+        <table>
+            <tr>
+                <th>Пользователь</th>
+                <th>Количество</th>
+                <th>Цена за монету</th>
+                <th>Действие</th>
+            </tr>
+            {% for order in sell_orders %}
+            <tr>
+                <td>{{ order.user }}</td>
+                <td>{{ order.amount }}</td>
+                <td class="red">{{ order.price_per_unit }}</td>
+                <td>
+                    <form action="{% url 'fulfill_order' order.id %}" method="POST">
+                        {% csrf_token %}
+                        <button class="button buy-button" type="submit">Купить</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

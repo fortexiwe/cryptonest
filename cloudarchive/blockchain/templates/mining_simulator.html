@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты симуляции майнинга</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a2a3a, #2e3b4e);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 3em;
+            font-weight: bold;
+            color: #f39c12;
+        }
+
+        .simulation-results {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .simulation-results h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .result-item {
+            font-size: 1.5em;
+            margin: 15px 0;
+        }
+
+        .result-item strong {
+            color: #f39c12;
+        }
+
+        .cards-section {
+            margin-top: 40px;
+        }
+
+        .cards-section h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .mining-card {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            width: 280px;
+            text-align: center;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+            margin: 20px;
+            display: inline-block;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .mining-card:hover {
+            transform: scale(1.05);
+        }
+
+        .mining-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .mining-card h3 {
+            font-size: 1.8em;
+            margin-top: 15px;
+            color: #f39c12;
+        }
+
+        .mining-card p {
+            font-size: 1.2em;
+            color: #ccc;
+        }
+
+        .button {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            margin-top: 20px;
+            text-transform: uppercase;
+            transition: background 0.3s ease;
+        }
+
+        .button:hover {
+            background: #e67e22;
+        }
+
+        .start-mining-btn {
+            background: #27ae60;
+            margin-top: 30px;
+            font-size: 1.5em;
+            padding: 15px 30px;
+            border-radius: 10px;
+            transition: background 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .start-mining-btn:hover {
+            background: #2ecc71;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Результаты симуляции майнинга</h1>
+        </header>
+
+        <section class="simulation-results">
+            <h2>Результаты симуляции:</h2>
+            <div class="result-item">
+                <strong>Общий хэшрейт (все видеокарты):</strong> {{ total_hashrate }} MH/s
+            </div>
+            <div class="result-item">
+                <strong>Хэшрейт сети:</strong> {{ network_hashrate }} MH/s
+            </div>
+            <div class="result-item">
+                <strong>Вознаграждение за блок:</strong> {{ reward_per_block }} ETH
+            </div>
+            <div class="result-item">
+                <strong>Время нахождения блока:</strong> {{ block_time }} секунд
+            </div>
+            <div class="result-item">
+                <strong>Продолжительность симуляции:</strong> {{ simulation_duration_hours }} часов
+            </div>
+            <div class="result-item">
+                <strong>Ваш доход:</strong> {{ user_income }} ETH
+            </div>
+        </section>
+
+        <section class="cards-section">
+            <h2>Ваши видеокарты:</h2>
+            <div class="mining-cards">
+                {% for card in cards %}
+                    <div class="mining-card">
+                        <img src="https://example.com/graphics/{{ card.brand|lower }}.png" alt="Видеокарта {{ card.name }}">
+                        <h3>{{ card.name }}</h3>
+                        <p><strong>Бренд:</strong> {{ card.brand }}</p>
+                        <p><strong>Хэшрейт:</strong> {{ card.MH }} MH/s</p>
+                        <p><strong>Цена:</strong> {{ card.price }} CLT</p>
+                        <p><strong>В наличии:</strong> {{ card.stock_quantity }}</p>
+                        <button class="button">Купить</button>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+        <form action="{% url 'start_mining' %}">
+        <section class="start-mining">
+            <button class="start-mining-btn" onclick="startMining()" type="submit">Начать майнить</button>
+        </section>
+        </form>
+    </div>
+
+    <script>
+        function startMining() {
+            alert('Майнинг начался!');  // Здесь можно добавить логику для запуска майнинга
+            // Например, отправить POST запрос или изменить состояние на сервере
+        }
+    </script>
+</body>
+</html>

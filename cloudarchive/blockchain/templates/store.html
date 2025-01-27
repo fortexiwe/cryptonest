@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Магазин Видеокарт</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #181818;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #2a2a2a;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: #00ff99;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .card {
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            width: 300px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        .card-body h3 {
+            margin: 10px 0;
+            font-size: 1.6rem;
+            color: #00ff99;
+        }
+
+        .card-body p {
+            margin: 5px 0;
+            font-size: 1rem;
+            color: #ccc;
+        }
+
+        .card-body .price {
+            font-size: 1.4rem;
+            color: #ffcc00;
+            font-weight: bold;
+        }
+
+        .card-body .stock {
+            font-size: 1rem;
+            color: #66ff66;
+        }
+
+        .card-body .mh {
+            font-size: 1rem;
+            color: #ff6666;
+        }
+
+        footer {
+            background: #2a2a2a;
+            padding: 20px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        footer p {
+            color: #bbb;
+        }
+
+        .button {
+            background: #00ff99;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background 0.3s ease;
+        }
+
+        .button:hover {
+            background: #00cc7a;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Магазин Видеокарт</h1>
+</header>
+
+<div class="container">
+    {% for card in graphics_cards %}
+    <form action="{% url 'buy_card' card.name %}" method="POST">
+        <div class="card">
+            <img src="https://opis-cdn.tinkoffjournal.ru/mercury/02-gpu-choosing.jtnpjjtcufht..jpg?preset=image_760w" alt="Видеокарта">
+            <div class="card-body">
+                <h3>{{ card.name }}</h3>
+                <p><strong>Бренд:</strong> {{ card.brand }}</p>
+                <p><strong>Размер памяти:</strong> {{ card.memory_size }} МБ</p>
+                <p class="price">Цена: {{ card.price }} CLT</p>
+                <p class="mh"><strong>Хешрейт:</strong> {{ card.MH }} MH/s</p>
+                <p class="stock"><strong>В наличии:</strong> {{ card.stock_quantity }}</p>
+                <button class="button" type="submit">Купить</button>
+            </div>
+        </div>
+        {% csrf_token %}
+    </form>
+    {% endfor %}
+</div>
+
+
+</body>
+</html>

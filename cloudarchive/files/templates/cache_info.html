@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cache Info</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #1a1a2e;
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+        }
+        .card {
+            background-color: #16213e;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+        }
+        .header {
+            background: linear-gradient(90deg, #e94560, #0f3460);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .file-item {
+            background-color: #0f3460;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .file-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #a3a3a3;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination a {
+            text-decoration: none;
+            background-color: #e94560;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 0 5px;
+            color: white;
+        }
+        .pagination a:hover {
+            background-color: #0f3460;
+        }
+        .pagination .disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto py-10">
+        <div class="max-w-lg mx-auto">
+            <div class="card p-8">
+                <h1 class="text-3xl font-bold text-center header">Cached Files Info</h1>
+
+                <!-- Форма для фильтрации по периоду -->
+                <form method="post" class="mt-6">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="time_period" class="block text-sm font-medium text-gray-300">Выберите период</label>
+                        <select id="time_period" name="time_period" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="today">Сегодня</option>
+                            <option value="yesterday">Вчера</option>
+                            <option value="last_7_days">Последние 7 дней</option>
+                            <option value="last_30_days">Последние 30 дней</option>
+                            <option value="custom">Пользовательский период</option>
+                        </select>
+                    </div>
+                    <div id="custom-period" class="hidden">
+                        <div class="mb-4">
+                            <label for="start_date" class="block text-sm font-medium text-gray-300">Начальная дата</label>
+                            <input type="date" id="start_date" name="start_date" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                        <div class="mb-4">
+                            <label for="end_date" class="block text-sm font-medium text-gray-300">Конечная дата</label>
+                            <input type="date" id="end_date" name="end_date" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                    </div>
+                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 border border-transparent rounded-md shadow-sm text-white font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hover:bg-gradient-to-l transition duration-300">
+                        Фильтровать
+                    </button>
+                </form>
+
+                <div class="mt-6">
+                    {% if files %}
+                        <h2 class="text-xl font-semibold mb-4">Cached Files:</h2>
+                        <ul>
+                            {% for file in files %}
+                                <li class="file-item">
+                                    <div class="file-info">
+                                        <span class="font-medium">{{ file.name }}</span>
+                                        <span class="text-sm text-gray-400">{{ file.extension }}</span>
+                                    </div>
+                                    <div class="file-info mt-2">
+                                        <span class="text-sm text-gray-400">Загружено: {{ file.time }}</span>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+
+                        <!-- Пагинация -->
+                        <div class="pagination">
+                            {% if files.has_previous %}
+                                <a href="?page=1" class="rounded-l">Первая</a>
+                                <a href="?page={{ files.previous_page_number }}" class="hover:bg-gray-600">«</a>
+                            {% else %}
+                                <span class="disabled rounded-l">Первая</span>
+                                <span class="disabled">«</span>
+                            {% endif %}
+
+                            <span class="px-3 py-1 bg-gray-600 text-white rounded">
+                                Страница {{ files.number }} из {{ files.paginator.num_pages }}
+                            </span>
+
+                            {% if files.has_next %}
+                                <a href="?page={{ files.next_page_number }}" class="hover:bg-gray-600">»</a>
+                                <a href="?page={{ files.paginator.num_pages }}" class="rounded-r">Последняя</a>
+                            {% else %}
+                                <span class="disabled">»</span>
+                                <span class="disabled rounded-r">Последняя</span>
+                            {% endif %}
+                        </div>
+
+                    {% else %}
+                        <p class="text-gray-400">No cached files available.</p>
+                    {% endif %}
+                </div>
+
+                <div class="mt-6 text-gray-400">
+                    Последнее обновление кэша: 
+                    <span class="font-medium">{{ cache_time }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Показываем или скрываем поля для пользовательского периода
+        document.getElementById('time_period').addEventListener('change', function(event) {
+            const customPeriod = document.getElementById('custom-period');
+            if (event.target.value === 'custom') {
+                customPeriod.classList.remove('hidden');
+            } else {
+                customPeriod.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

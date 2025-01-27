@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Майнинг</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            background-color: #00ff7f;
+            color: #000;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #00d874;
+        }
+        .stop-btn {
+            background-color: #ff4d4d;
+        }
+        .stop-btn:hover {
+            background-color: #e03d3d;
+        }
+        .info {
+            margin: 10px 0;
+        }
+        .countdown {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00ff7f;
+        }
+    </style>
+</head>
+<body>
+    <h1>Майнинг</h1>
+    <p>{{ message }}</p>
+
+    <!-- Карточка с информацией о майнинге -->
+    <div class="card">
+        <p class="info">Общий баланс: <strong>{{ total_balance }} CLT</strong></p>
+        <p class="info">До следующего вознаграждения: 
+            <span class="countdown" id="countdown">00:00</span>
+        </p>
+        <p class="info">Общая скорость хэширования: <strong>{{ total_hashrate }}</strong></p>
+    </div>
+
+    <!-- Кнопки управления -->
+    <form method="post" action="{% url 'start_mining' %}">
+        {% csrf_token %}
+        <button type="submit">Запустить майнинг</button>
+    </form>
+    <form method="post" action="{% url 'stop_mining' %}">
+        {% csrf_token %}
+        <button type="submit" class="stop-btn">Остановить майнинг</button>
+    </form>
+
+    <script>
+        // Инициализация обратного отсчета
+        const countdownElement = document.getElementById('countdown');
+        let timeLeft = {{ seconds_to_next_reward }}; // Передайте это значение из контекста Django
+
+        function updateCountdown() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            countdownElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            if (timeLeft > 0) {
+                timeLeft--;
+                setTimeout(updateCountdown, 1000);
+            }
+        }
+
+        // Запуск таймера
+        updateCountdown();
+    </script>
+</body>
+</html>

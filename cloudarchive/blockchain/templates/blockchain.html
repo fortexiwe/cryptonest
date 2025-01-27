@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ядро Блокчейна</title>
+    <style>
+        /* Общие стили */
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #081c24, #0d3b66);
+            color: #e6e6e6;
+            overflow-x: hidden;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #5bc0eb;
+        }
+        a {
+            text-decoration: none;
+            color: white;
+        }
+        /* Контейнер */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        /* Навигация */
+        .nav {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 0;
+            background-color: #122c34;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        .nav a {
+            padding: 10px 20px;
+            border-radius: 5px;
+            background: linear-gradient(135deg, #34b3a0, #16697a);
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        .nav a:hover {
+            background: linear-gradient(135deg, #5bc0eb, #16697a);
+            transform: scale(1.1);
+        }
+        /* Блок отображения блокчейна */
+        .blockchain-display {
+            background-color: #0a1a2a;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        /* Графическое ядро блокчейна */
+        .blockchain-core {
+            margin: 30px auto;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid #34b3a0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            animation: rotateCore 4s infinite linear;
+        }
+        .blockchain-core::before {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #5bc0eb;
+            animation: moveDot 2s infinite linear;
+        }
+        @keyframes rotateCore {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes moveDot {
+            0% { top: 0; left: 0; }
+            25% { top: 0; left: 100%; }
+            50% { top: 100%; left: 100%; }
+            75% { top: 100%; left: 0; }
+            100% { top: 0; left: 0; }
+        }
+        .block {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #1a4d63, #34b3a0);
+            color: #e6e6e6;
+        }
+        .block h3 {
+            margin: 0;
+            color: #5bc0eb;
+        }
+        .block .info {
+            margin-top: 10px;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        /* Анимация */
+        .glow {
+            text-shadow: 0 0 8px #34b3a0, 0 0 15px #5bc0eb, 0 0 20px #34b3a0;
+        }
+        /* Мобильная версия */
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            .nav a {
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Заголовок -->
+    <div class="container">
+        <h1 class="glow">CloudArchive Ядро Блокчейна</h1>
+        <h2>Исследуйте мощь блокчейна в вашем облаке</h2>
+    </div>
+
+    <!-- Навигация -->
+    <nav class="nav">
+        <a href="/store/">Магазин</a>
+        <a href="/mining/">Майнинг</a>
+        <a href="/exchange/">Биржа</a>
+        <a href="/transactions/">Транзакции</a>
+    </nav>
+
+    <!-- Графическое ядро блокчейна -->
+    <div class="container">
+        <div class="blockchain-core">
+            <div class="inner-core">
+                <!-- Мелкие элементы в центре для симуляции вращения -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Отображение блокчейна -->
+    <div class="container">
+        <div class="blockchain-display">
+            <h2 class="glow">Обзор Блокчейна</h2>
+            <div class="block">
+                <h3>Блок #1</h3>
+                <div class="info">
+                    <strong>Хэш:</strong> 0000x3d5e2c... <br>
+                    <strong>Предыдущий хэш:</strong> 0000x0000... <br>
+                    <strong>Транзакции:</strong> 3 <br>
+                    <strong>Время:</strong> 2024-12-05 12:34:56
+                </div>
+            </div>
+            <div class="block">
+                <h3>Блок #2</h3>
+                <div class="info">
+                    <strong>Хэш:</strong> 0000x5a9f1e... <br>
+                    <strong>Предыдущий хэш:</strong> 0000x3d5e2c... <br>
+                    <strong>Транзакции:</strong> 2 <br>
+                    <strong>Время:</strong> 2024-12-05 13:00:00
+                </div>
+            </div>
+            <!-- Пример других блоков -->
+        </div>
+    </div>
+</body>
+</html>

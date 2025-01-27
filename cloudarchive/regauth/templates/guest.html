@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация/Регистрация</title>
+    <style>
+        /* Общие стили */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #2a3b4c, #1f2b3d);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-header {
+            margin-bottom: 30px;
+        }
+
+        h1, h2 {
+            font-weight: bold;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeInHeader 1s forwards;
+        }
+
+        h2 {
+            font-size: 24px;
+        }
+
+        @keyframes fadeInHeader {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Формы */
+        .form-container {
+            display: none;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            font-size: 14px;
+            color: #b4b9c1;
+            margin-bottom: 5px;
+            display: block;
+            text-align: left;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background: #2c3e50;
+            border: 1px solid #34495e;
+            border-radius: 5px;
+            color: #fff;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input[type="submit"] {
+            background: #1abc9c;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        input[type="submit"]:hover {
+            background: #16a085;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            background-color: #34495e;
+            border-color: #1abc9c;
+        }
+
+        /* Анимация для плавного появления */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Стиль для кнопок переключения */
+        .switch-btns {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .switch-btns button {
+            background: transparent;
+            border: 1px solid #1abc9c;
+            color: #1abc9c;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px 16px;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .switch-btns button:hover {
+            background: #1abc9c;
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        /* Стиль для кнопки отправки */
+        input[type="submit"]:disabled {
+            background-color: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        /* Форма подтверждения */
+        .confirmation-container {
+            display: none;
+            margin-top: 20px;
+            color: #fff;
+        }
+
+        .confirmation-container.active {
+            display: block;
+        }
+
+        /* Анимация для появления формы подтверждения */
+        @keyframes fadeInConfirmation {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-container.active .register-form {
+            animation: fadeInConfirmation 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-header">
+            <h1>Регистрация/Авторизация</h1>
+        </div>
+
+        <div class="form-container active" id="formContainer">
+            <!-- Форма регистрации -->
+            <div class="form-group register-form active">
+                <h2>Регистрация</h2>
+                <form id="registerForm" action="/reg/" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="email">Электронная почта</label>
+                        {{ reg_form.email }}
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Имя пользователя</label>
+                        {{ reg_form.username }}
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Пароль</label>
+                        {{ reg_form.password }}
+                    </div>
+                    <div class="form-group">
+                        <label for="avatar">Расскажите о себе(на основе этого будет сгенерирована Ваша аватарка)</label>
+                        {{ reg_form.avatar }}
+                    </div>
+                    <input type="submit" value="Зарегистрироваться">
+                </form>
+            </div>
+
+            <!-- Форма подтверждения почты -->
+            <div class="confirmation-container" id="confirmationContainer">
+                <h2>Подтвердите вашу почту</h2>
+                <form action="/confirm-email/" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="code">Введите код подтверждения</label>
+                        <input type="text" name="code" id="code" required>
+                    </div>
+                    <input type="submit" value="Подтвердить">
+                </form>
+            </div>
+
+            <!-- Форма авторизации -->
+            <div class="form-group login-form">
+                <h2>Авторизация</h2>
+                <form action="/auth/" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="email">Почта</label>
+                        {{ auth_form.email }}
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Пароль</label>
+                        {{ auth_form.password }}
+                    </div>
+                    <input type="submit" value="Войти">
+                </form>
+            </div>
+        </div>
+
+        <div class="switch-btns">
+            <button id="toRegister">Уже есть аккаунт? Войти</button>
+            <button id="toLogin">Еще нет аккаунта? Регистрация</button>
+        </div>
+    </div>
+
+    <script>
+        const formContainer = document.getElementById('formContainer');
+        const toLoginBtn = document.getElementById('toLogin');
+        const toRegisterBtn = document.getElementById('toRegister');
+        const confirmationContainer = document.getElementById('confirmationContainer');
+        const registerForm = document.getElementById('registerForm');
+
+        // Слушатель на клик для переключения между формами
+        toLoginBtn.addEventListener('click', function() {
+            formContainer.classList.remove('active');
+            formContainer.classList.add('show-login');
+        });
+
+        toRegisterBtn.addEventListener('click', function() {
+            formContainer.classList.add('active');
+        });
+
+        // Функция для отображения формы подтверждения
+        function showConfirmation() {
+            confirmationContainer.classList.add('active');  // Показать форму подтверждения
+            document.querySelector('.register-form').style.display = 'none';  // Скрыть форму регистрации
+        }
+
+        // Отправка данных формы через AJAX
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();  // Блокируем стандартную отправку формы
+
+            const formData = new FormData(registerForm);
+
+            fetch('/reg/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name="csrfmiddlewaretoken"]').value
+                }
+            })
+            .then(response => response.json())  // Предполагаем, что сервер возвращает JSON
+            .then(data => {
+                if (data.success) {
+                    // Если регистрация прошла успешно, показываем форму подтверждения
+                    showConfirmation();
+                } else {
+                    // Обработка ошибок (например, если форма не прошла валидацию)
+                    alert(data.error || 'Ошибка регистрации');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка при отправке формы:', error);
+            });
+        });
+    </script>
+</body>
+</html>

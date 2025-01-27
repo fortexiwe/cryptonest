@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudArchive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Raleway:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+     /* Основные стили */
+body {
+    font-family: 'Roboto', Arial, sans-serif; /* Professional font */
+    background-color: #121212; /* Dark background */
+    color: #E0E0E0; /* Light text for contrast */
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative; /* For absolute positioning of moving backgrounds */
+}
+
+/* Background Animation */
+.background-animation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(0, 123, 123, 0.1) 20%, rgba(0, 123, 123, 0.05) 80%);
+    animation: moveBackground 10s linear infinite; /* Animate the background */
+    z-index: 0; /* Keep it behind everything else */
+}
+
+@keyframes moveBackground {
+    0% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(-20%, -20%);
+    }
+}
+
+/* Header */
+header {
+    background: linear-gradient(90deg, #007B7F, #00BFAE); /* Gradient header */
+    color: #ffffff;
+    padding: 15px 30px; /* Compact header */
+    text-align: center;
+    font-size: 1.8rem; /* Slightly larger font */
+    font-weight: 600;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    animation: slideDown 0.5s ease; /* Animation on header appearance */
+}
+
+/* Sidebar */
+.sidebar {
+    width: 240px; /* Maintain width for consistency */
+    background-color: #1F1F1F; /* Dark grey sidebar */
+    color: #E0E0E0; /* Light text */
+    position: fixed;
+    top: 0;
+    left: -240px;
+    height: 100%;
+    transition: left 0.3s ease;
+    padding-top: 80px; /* Adjusted padding */
+    z-index: 999;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.4); /* Subtle shadow */
+}
+
+.sidebar.open {
+    left: 0;
+}
+
+.sidebar a {
+    display: block;
+    padding: 15px 20px;
+    color: #E0E0E0; /* Light link color */
+    text-decoration: none;
+    border-radius: 4px; /* Slightly sharper corners */
+    font-weight: 500;
+    margin: 10px 0;
+    transition: background-color 0.3s, color 0.3s;
+    animation: fadeIn 0.5s ease; /* Animation for sidebar links */
+}
+
+.sidebar a:hover {
+    background-color: #007B7F; /* Blue highlight */
+    color: #ffffff; /* White text on hover */
+}
+
+/* Content */
+.content {
+    padding: 80px 30px;
+    margin-left: 240px; /* Sidebar width */
+    background-color: #181818; /* Slightly lighter dark background */
+    flex-grow: 1;
+    transition: margin-left 0.3s ease;
+}
+
+/* Storage Info */
+.storage-info {
+    text-align: center;
+    margin: 30px 0;
+    animation: bounce 1s infinite; /* Bouncing effect */
+}
+
+.storage-icon {
+    font-size: 40px; /* Moderate icon size */
+    color: #007B7F; /* Blue for icons */
+    margin-bottom: 10px;
+}
+
+/* Circular Progress */
+.circle-progress {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+}
+
+.circle-bg {
+    fill: none;
+    stroke: #3A3A3A; /* Dark grey for background circle */
+    stroke-width: 12;
+}
+
+.circle {
+    fill: none;
+    stroke-width: 12;
+    stroke-linecap: round;
+    stroke: #007B7F; /* Bright blue for progress */
+    stroke-dasharray: 440;
+    stroke-dashoffset: 440;
+    transition: stroke-dashoffset 1s, transform 0.5s; /* Added transition for scale */
+    animation: draw 1s forwards; /* Animation for progress drawing */
+}
+
+.circle-text {
+    font-size: 20px; /* Consistent size */
+    fill: #E0E0E0; /* Light text */
+    font-weight: 600;
+    text-anchor: middle;
+    dominant-baseline: middle;
+}
+
+/* File Cards */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Увеличен минимальный размер для лучшего размещения */
+    gap: 20px;
+    padding: 30px;
+}
+
+{% if display_mode == 'GRID' %}
+.file-card {
+    background-color: #2A2A2A;
+    border-radius: 8px;
+    padding: 15px;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Выравнивание элементов сверху */
+    text-align: center;
+    height: auto; /* Убираем фиксированную высоту для карточки */
+    overflow: hidden;
+    min-height: 200px; /* Минимальная высота карточки для удобства */
+}
+
+.file-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    animation: pulse 0.5s infinite;
+}
+
+.file-card img {
+    max-width: 80%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.file-icon {
+    font-size: 40px;
+    color: #007B7F;
+    margin-bottom: 5px;
+}
+
+.file-name {
+    font-size: 16px;
+    color: #ffffff;
+    margin-bottom: 5px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-height: 20px;
+}
+
+.file-date {
+    font-size: 12px;
+    color: #B0BEC5;
+    margin-bottom: 10px;
+    max-height: 20px;
+}
+{% else %}
+
+.file-card {
+    background-color: #2A2A2A;
+    border-radius: 8px;
+    padding: 15px;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column; /* Keep elements stacked vertically */
+    align-items: flex-start; /* Align content to the left */
+    justify-content: flex-start; /* Align content to the top */
+    text-align: left; /* Ensure text is aligned to the left */
+    height: auto;
+    overflow: hidden;
+    min-height: 120px; /* Slightly higher minimum height for better alignment */
+    width: 100%; /* Ensure it takes full available width */
+}
+
+.file-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    animation: pulse 0.5s infinite;
+}
+
+.file-card img {
+    max-width: 60px; /* Adjust image size */
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px; /* Space between image and other elements */
+}
+
+.file-icon {
+    font-size: 30px; /* Adjust size for better fit */
+    color: #007B7F;
+    margin-bottom: 10px; /* Space between icon and file name */
+}
+
+.file-name {
+    font-size: 16px;
+    color: #ffffff;
+    font-weight: 500;
+    overflow-wrap: break-word; /* Разрешает разрывы длинных слов */
+    word-wrap: break-word; /* Для поддержки старых браузеров */
+    word-break: break-word; /* Добавляет разрывы при необходимости */
+    white-space: normal; /* Разрешает перенос строк */
+    margin-bottom: 5px; /* Пространство между именем файла и датой */
+    flex: 1;
+}
+
+
+.file-date {
+    font-size: 12px;
+    color: #B0BEC5;
+    margin-top: 5px; /* Ensure space between file name and date */
+    max-height: 20px;
+}
+
+{% endif %}
+
+.download-btn {
+    display: inline-block;
+    background-color: #007B7F;
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s, transform 0.2s;
+    animation: slideIn 0.5s ease;
+    margin-top: 10px;
+}
+
+.download-btn:hover {
+    background-color: #005B5B;
+    transform: scale(1.05);
+}
+
+
+
+/* Dropdown Menu */
+.dropdown {
+    position: absolute;
+    top: 5px; /* Adjusted position */
+    right: 5px; /* Adjusted position */
+    cursor: pointer;
+    font-size: 24px; /* Standard icon size */
+    color: #E0E0E0; /* Light color for visibility */
+    transition: transform 0.2s; /* Add transition for dropdown */
+}
+
+.dropdown:hover {
+    transform: rotate(360deg); /* Rotate effect on hover */
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 25px;
+    background-color: #2A2A2A; /* Dark menu background */
+    border-radius: 4px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    z-index: 10;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+    animation: fadeIn 0.3s ease; /* Fade in effect */
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 8px 12px; /* Moderate padding */
+    text-decoration: none;
+    color: #E0E0E0; /* Light text */
+    font-size: 14px; /* Consistent size */
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.dropdown-menu a:hover {
+    background-color: #007B7F; /* Blue highlight in dropdown */
+}
+/* Кнопка создания папки */
+.create-folder-btn {
+  
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background-color 0.3s;
+}
+
+.create-folder-btn:hover {
+    background-color: #005B5B;
+}
+
+/* Стили для модального окна */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #2A2A2A;
+    margin: auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.close-modal {
+    color: #ffffff;
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.close-modal:hover {
+    color: #FF6B6B;
+}
+
+.modal-content input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin: 15px 0;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background-color: #1F1F1F;
+    color: #E0E0E0;
+}
+
+.create-btn {
+    background-color: #007B7F;
+    color: #ffffff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.create-btn:hover {
+    background-color: #005B5B;
+}
+.folder-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.folder-card {
+    background-color: #1e2a3a; /* Dark background for folder cards */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    color: #fff;
+    cursor: pointer;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.folder-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.folder-icon {
+    background-color: #3b4a63; /* Slightly lighter background for icon */
+    border-radius: 50%;
+    padding: 10px;
+    margin-right: 15px;
+    font-size: 30px;
+    color: #ffd700; /* Gold color for folder icon */
+}
+
+.folder-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.folder-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #f0f0f0;
+}
+
+.folder-date {
+    font-size: 14px;
+    color: #b0b0b0; /* Lighter color for the date */
+}
+
+.folder-name, .folder-date {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+
+
+/* Menu Toggle Button */
+.menu-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: #007B7F; /* Bright blue */
+    color: white;
+    padding: 10px 15px; /* Moderate padding */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 1001;
+    font-size: 1rem; /* Consistent size */
+    animation: fadeIn 0.5s ease; /* Fade in animation for button */
+}
+
+
+.menu-toggle_more {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #00BFAE; /* Bright blue */
+    color: white;
+    padding: 10px 15px; /* Moderate padding */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 1001;
+    font-size: 1rem; /* Consistent size */
+    animation: fadeIn 0.5s ease; /* Fade in animation for button */
+}
+
+
+.password-input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 2px solid #3b4a63;
+    background-color: #2c3a52;
+    color: #f0f0f0;
+    margin-bottom: 15px; /* Уменьшен отступ */
+    outline: none;
+    transition: all 0.3s ease;
+    box-sizing: border-box; /* Учитывать padding в расчете ширины */
+}
+/* Эффект фокуса для поля ввода */
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .content {
+        margin-left: 0;
+        padding: 70px 15px; /* Adjusted padding for mobile */
+    }
+    .sidebar {
+        width: 200px; /* Adjust sidebar width for mobile */
+    }
+    .sidebar.open {
+        left: 0; /* Ensure sidebar can still open */
+    }
+}
+
+/* Animations */
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes draw {
+    0% {
+        stroke-dashoffset: 440;
+    }
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+
+
+@keyframes slideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+.drag-item {
+            width: 100px;
+            height: 100px;
+            background-color: #007B7F;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .drop-area {
+            width: 100%;
+            height: 200px;
+            border: 2px dashed #007B7F;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #007B7F;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            background-color: #f0f0f0;
+        }
+
+        .dragging {
+            opacity: 0.5;
+        }
+
+/* Стили для контейнера карточки */
+.file-card {
+    position: relative; /* Для позиционирования дочерних элементов */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #2A2A2A;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Стили для чекбокса */
+.file-checkbox {
+    appearance: none; /* Убираем стандартный стиль */
+    -webkit-appearance: none; /* Для WebKit-браузеров */
+    width: 20px;
+    height: 20px;
+    border: 2px solid #0077b6; /* Цвет рамки */
+    border-radius: 4px; /* Слегка закругленные углы */
+    background-color: transparent;
+    outline: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    position: absolute;
+    top: 10px; /* Отступ сверху */
+    left: 10px; /* Отступ слева */
+}
+
+.file-checkbox:checked {
+    background-color: #0077b6; /* Цвет при выборе */
+    border-color: #005f8a; /* Более темный цвет рамки */
+    box-shadow: 0 0 5px rgba(0, 119, 182, 0.6);
+}
+
+.file-checkbox:checked::after {
+    content: "✔"; /* Галочка */
+    font-size: 14px;
+    color: white;
+    display: block;
+    text-align: center;
+    line-height: 20px; /* Центровка по вертикали */
+}
+
+.file-checkbox:hover {
+    border-color: #005f8a; /* Цвет рамки при наведении */
+    box-shadow: 0 0 5px rgba(0, 95, 138, 0.5);
+}
+
+.file-checkbox:focus {
+    border-color: #003f5c; /* Цвет рамки при фокусе */
+    box-shadow: 0 0 6px rgba(0, 63, 92, 0.6);
+}
+
+
+.download-selected-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.download-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #0077b6;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.download-btn:hover {
+    background-color: #005f8a;
+}
+
+a {
+            text-decoration: none;
+        }
+
+        /* Пример стиля при наведении на ссылку */
+        a:hover {
+            color: blue; /* Меняем цвет при наведении */
+        }
+
+        .avatar-container {
+    text-align: center;
+    margin: 10px 0;
+}
+
+/* Стили для аватарки */
+.avatar {
+    width: 100px; /* Ширина аватара */
+    height: 100px; /* Высота аватара */
+    border-radius: 50%; /* Округление углов для круглого аватара */
+    object-fit: cover; /* Обрезка изображения по размеру контейнера */
+}
+
+
+
+
+    </style>
+    <!-- Подключение Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+</head>
+<body>
+    <!-- Кнопка для открытия бокового меню -->
+    <button class="menu-toggle" id="menu-btn">Меню</button>
+
+    <!-- Шапка -->
+    <header>
+        CryptoNest
+    </header>
+{% if language == 'RU' %}
+    <!-- Боковое меню -->
+    <div class="sidebar" id="sidebar">
+        
+        <div class="avatar-container">
+            <img src="data:image/png;base64,{{ image }}" alt="" class="avatar">
+        </div>
+        <a href="{% url 'main_page' %}">Главная</a>
+        <a href="{% url 'load_file' %}">Загрузить файл</a>
+        <a href="#">Мои файлы</a>
+        <a href="{% url 'settings' %}">Настройки</a>
+        <a href="{% url 'transfer' %}">Перенос файлов</a>
+        <a href="{% url 'generate_image' %}">Создание картинок</a>
+        <a class="create-folder-btn" id="create-folder-btn">Создать папку</a>
+
+<!-- Модальное окно для создания папки -->
+<div class="modal" id="create-folder-modal">
+    <div class="modal-content">
+        <span class="close-modal" id="close-modal">&times;</span>
+        <h2>Создать папку</h2>
+        <form method="post" action="{% url 'create_folder' %}">
+            {% csrf_token %}
+            <label for="folder-name">Название папки:</label>
+            <input type="text" name="folder_name" id="folder-name" required>
+            <button type="submit" class="create-btn">Создать</button>
+        </form>
+    </div>
+</div>
+
+
+
+
+        <!-- Информация о хранилище в боковом меню -->
+        <div class="storage-info">
+            <div class="storage-icon">
+                &#128190;
+            </div>
+            <div class="circle-progress">
+                <svg width="120" height="120">
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#4a90e2"/>
+                            <stop offset="100%" stop-color="#00d1ff"/>
+                        </linearGradient>
+                    </defs>
+                    <circle class="circle-bg" cx="60" cy="60" r="54"></circle>
+                    <circle class="circle" cx="60" cy="60" r="54"></circle>
+                    <text x="60" y="65" class="circle-text">{{ used_percentage|floatformat:2 }}%</text>
+                </svg>
+            </div>
+            <p>{{ used|floatformat:3 }} GB из {{ user_storage.storage_total|floatformat:0 }} GB</p>
+        </div>
+    </div>
+    <button id="openModal">Открыть окно</button>
+
+
+    <!-- Основной контент -->
+    <form action="{% url 'download_more' %}" method="POST" id="parentForm">
+        {% csrf_token %}
+        <div class="content" id="content">
+            <div class="grid-container">
+                {% for file in files %}
+                    <div class="file-card" draggable="true" id="dragItem">
+                        <input type="checkbox" name="selected_files" value="{{ file.id }}" class="file-checkbox">
+                        {% if file.is_image %}
+                            <img src="{{ file.file.url }}" alt="{{ file.original_filename }}">
+                        {% else %}
+                            <div class="file-icon">📄</div>
+                        {% endif %}
+                        <p class="file-name">{{ file.original_filename }}</p>
+                        <p class="file-date">Загружен: {{ file.created_at|date:"d.m.Y H:i" }}</p>
+                        
+                        <!-- Вложенная форма для скачивания -->
+                        <form method="post" action="{% url 'download_file' file.id %}" id="downloadForm_{{ file.id }}">
+                            {% csrf_token %}
+                            <input type="hidden" name="file_id" value="{{ file.id }}">
+                            
+                            <!-- Поле для ввода пароля -->
+                            <div class="password-container">
+                                <div class="password-input-wrapper">
+                                    <input type="password" name="password" class="password-input" placeholder="Введите ваш пароль">
+                                </div>
+                            </div>
+    
+                            <!-- Кнопка для скачивания -->
+                            <button type="button" class="download-btn" onclick="submitForm('{{ file.id }}')">Скачать</button>
+                        </form>
+    
+                    
+
+                    
+                    <!-- Кнопка для действий -->
+                    <div class="dropdown">
+                        &#x22EE; <!-- Три вертикальные точки -->
+                        <div class="dropdown-menu">
+                            <a id="rename-btn" class="rename-btn">Переименовать</a>
+                            <a href="{% url 'delete_file' file.id %}">Удалить</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="empty-message">Нет загруженных файлов.</p>
+            {% endfor %}
+        
+
+            <div class="download-selected-container">
+                <button type="submit" class="menu-toggle_more" id="menu-btn">Скачать выбранное</button>
+            </div>
+            
+            <div class="folder-container" id="dropArea1">
+                    {% for folder in folders %}
+                    <a href="{% url 'folder' folder.id %}">
+                        <div class="folder-card">
+                            <div class="folder-icon">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                            <div class="folder-info">
+                                <div class="folder-name">{{ folder.name }}</div>
+                                <div class="folder-date">{{ folder.created_at|date:"d M Y H:i" }}</div>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                
+            </div>
+        </div>
+    </div>
+</form>
+{% else %}
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    
+    <div class="avatar-container">
+        <img src="data:image/png;base64,{{ image }}" alt="" class="avatar">
+    </div>
+    <a href="{% url 'main_page' %}">Home</a>
+    <a href="{% url 'load_file' %}">Upload File</a>
+    <a href="#">My Files</a>
+    <a href="{% url 'settings' %}">Settings</a>
+    <a href="{% url 'transfer' %}">File Transfer</a>
+    <a href="{% url 'generate_image' %}">Generate Images</a>
+    <a class="create-folder-btn" id="create-folder-btn">Create Folder</a>
+
+    <!-- Modal for creating folder -->
+    <div class="modal" id="create-folder-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-modal">&times;</span>
+            <h2>Create Folder</h2>
+            <form method="post" action="{% url 'create_folder' %}">
+                {% csrf_token %}
+                <label for="folder-name">Folder Name:</label>
+                <input type="text" name="folder_name" id="folder-name" required>
+                <button type="submit" class="create-btn">Create</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Storage Information in Sidebar -->
+    <div class="storage-info">
+        <div class="storage-icon">
+            &#128190;
+        </div>
+        <div class="circle-progress">
+            <svg width="120" height="120">
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#4a90e2"/>
+                        <stop offset="100%" stop-color="#00d1ff"/>
+                    </linearGradient>
+                </defs>
+                <circle class="circle-bg" cx="60" cy="60" r="54"></circle>
+                <circle class="circle" cx="60" cy="60" r="54"></circle>
+                <text x="60" y="65" class="circle-text">{{ used_percentage|floatformat:2 }}%</text>
+            </svg>
+        </div>
+        <p>{{ used|floatformat:3 }} GB of {{ user_storage.storage_total|floatformat:0 }} GB</p>
+    </div>
+</div>
+<button id="openModal">Open Modal</button>
+
+<!-- Main Content -->
+<form action="{% url 'download_more' %}" method="POST" id="parentForm">
+    {% csrf_token %}
+    <div class="content" id="content">
+        <div class="grid-container">
+            {% for file in files %}
+                <div class="file-card" draggable="true" id="dragItem">
+                    <input type="checkbox" name="selected_files" value="{{ file.id }}" class="file-checkbox">
+                    {% if file.is_image %}
+                        <img src="{{ file.file.url }}" alt="{{ file.original_filename }}">
+                    {% else %}
+                        <div class="file-icon">📄</div>
+                    {% endif %}
+                    <p class="file-name">{{ file.original_filename }}</p>
+                    <p class="file-date">Uploaded: {{ file.created_at|date:"d.m.Y H:i" }}</p>
+                    
+                    <!-- Nested form for downloading -->
+                    <form method="post" action="{% url 'download_file' file.id %}" id="downloadForm_{{ file.id }}">
+                        {% csrf_token %}
+                        <input type="hidden" name="file_id" value="{{ file.id }}">
+                        
+                        <!-- Password input field -->
+                        <div class="password-container">
+                            <div class="password-input-wrapper">
+                                <input type="password" name="password" class="password-input" placeholder="Enter your password">
+                            </div>
+                        </div>
+
+                        <!-- Download button -->
+                        <button type="button" class="download-btn" onclick="submitForm('{{ file.id }}')">Download</button>
+                    </form>
+
+                    <!-- Action button -->
+                    <div class="dropdown">
+                        &#x22EE; <!-- Three vertical dots -->
+                        <div class="dropdown-menu">
+                            <a id="rename-btn" class="rename-btn">Rename</a>
+                            <a href="{% url 'delete_file' file.id %}">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="empty-message">No files uploaded.</p>
+            {% endfor %}
+
+            <div class="download-selected-container">
+                <button type="submit" class="menu-toggle_more" id="menu-btn">Download Selected</button>
+            </div>
+            
+            <div class="folder-container" id="dropArea1">
+                {% for folder in folders %}
+                    <a href="{% url 'folder' folder.id %}">
+                        <div class="folder-card">
+                            <div class="folder-icon">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                            <div class="folder-info">
+                                <div class="folder-name">{{ folder.name }}</div>
+                                <div class="folder-date">{{ folder.created_at|date:"d M Y H:i" }}</div>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</form>
+
+{% endif %}
+
+    
+
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const content = document.getElementById('content');
+
+        menuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            content.style.marginLeft = sidebar.classList.contains('open') ? '240px' : '0';
+        });
+
+        const circle = document.querySelector('.circle');
+        const usedPercentage = {{ used_percentage|floatformat:0 }};
+        const radius = circle.r.baseVal.value;
+        const circumference = 2 * Math.PI * radius;
+
+        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+        circle.style.strokeDashoffset = circumference;
+
+        function setProgress(percent) {
+            const offset = circumference - (percent / 100 * circumference);
+            circle.style.strokeDashoffset = offset;
+        }
+
+        setProgress(usedPercentage);
+        const createFolderBtn = document.getElementById('create-folder-btn');
+        const modal = document.getElementById('create-folder-modal');
+        const closeModal = document.getElementById('close-modal');
+
+        createFolderBtn.addEventListener('click', () => {
+            modal.style.display = 'flex';
+        });
+
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        const dragItem = document.getElementById('dragItem');
+        const dropArea1 = document.getElementById('dropArea1');
+        const dropArea2 = document.getElementById('dropArea2');
+
+        // Событие начала перетаскивания
+        dragItem.addEventListener('dragstart', (event) => {
+            dragItem.classList.add('dragging');
+        });
+
+        // Событие окончания перетаскивания
+        dragItem.addEventListener('dragend', (event) => {
+            dragItem.classList.remove('dragging');
+        });
+
+        // Событие, когда элемент перетаскивается над областью
+        dropArea1.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropArea1.style.backgroundColor = '#d1e7e1';
+        });
+
+        dropArea2.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropArea2.style.backgroundColor = '#d1e7e1';
+        });
+
+        // Событие, когда элемент покидает область
+        dropArea1.addEventListener('dragleave', (event) => {
+            dropArea1.style.backgroundColor = '#f0f0f0';
+        });
+
+        dropArea2.addEventListener('dragleave', (event) => {
+            dropArea2.style.backgroundColor = '#f0f0f0';
+        });
+
+        // Событие, когда элемент сбрасывается в область
+        dropArea1.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropArea1.style.backgroundColor = '#f0f0f0';
+
+            // Перемещаем элемент в новую область
+            dropArea1.appendChild(dragItem);
+            dragItem.style.position = 'relative';
+            dragItem.style.top = '0';
+            dragItem.style.left = '0';
+
+            // Отправляем данные на сервер
+            sendDataToServer(dragItem.dataset.file, dropArea1.dataset.folder);
+        });
+
+        dropArea2.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropArea2.style.backgroundColor = '#f0f0f0';
+
+            // Перемещаем элемент в новую область
+            dropArea2.appendChild(dragItem);
+            dragItem.style.position = 'relative';
+            dragItem.style.top = '0';
+            dragItem.style.left = '0';
+
+            // Отправляем данные на сервер
+            sendDataToServer(dragItem.dataset.file, dropArea2.dataset.folder);
+        });
+
+        // Функция для отправки данных на сервер
+        function sendDataToServer(file, folder) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('folder', folder);
+
+            fetch('{% url "transfer" %}', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Ответ от сервера:', data);
+            })
+            .catch(error => {
+                console.error('Ошибка при отправке запроса:', error);
+            });
+        }
+
+        function submitForm(fileId) {
+        // Найти вложенную форму по ID
+        const form = document.getElementById(`downloadForm_${fileId}`);
+        if (form) {
+            form.submit(); // Отправить вложенную форму
+            }
+        }
+
+    </script>
+</body>
+</html>
