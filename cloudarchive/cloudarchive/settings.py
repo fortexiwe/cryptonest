@@ -139,11 +139,11 @@ MEDIA_URL = '/media/'
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 
-# Конфигурация кэша
+
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",  # Используем Redis на локальном хосте (порт 6379)
+        "LOCATION": "redis://127.0.0.1:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -155,6 +155,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.mail.ru'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'fortexiwe@bk.ru'  # Ваш email адрес
-EMAIL_HOST_PASSWORD = 'cfSV8vdpnxuLm5bf5Qvf'  # Пароль приложения, который вы только что создали
+EMAIL_HOST_USER = 'fortexiwe@bk.ru' 
+EMAIL_HOST_PASSWORD = '' 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
