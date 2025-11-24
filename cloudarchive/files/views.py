@@ -46,7 +46,6 @@ def upload_file(request):
             for uploaded_file in uploaded_files:
                 original_filename = uploaded_file.name
                 unique_filename = generate_unique_filename(None, original_filename)
-                # Читаем содержимое файла один раз и сохраняем его в переменную
                 file_content = uploaded_file.read()
                 # Если выбрано Архивирование, отправляем файл напрямую на сервер архивации
                 if upload_type == "Архивирование":
@@ -54,7 +53,6 @@ def upload_file(request):
                     
                     password = request.POST.get('password')
                     
-                    # Отправляем запрос на архивацию
                     response = requests.post(ARCHIVE_URL, files=files, data={'password': password, 'user': request.session['username']})
 
                     if response.status_code == 200:
@@ -75,7 +73,6 @@ def upload_file(request):
                         return JsonResponse({'status': 'error', 'message': error_message}, status=500)
                 else:
                     saved_path = default_storage.save(unique_filename, uploaded_file)
-                    # Сохраняем файл на сервере хранения
                     files_to_send = {'files': (unique_filename, file_content)}
                     data = request.POST.get('password')  
                     response = requests.post('http://0.0.0.0:8002/cloud/', files=files_to_send, data={'password': data, 'user': request.session['username']})
@@ -93,7 +90,6 @@ def upload_file(request):
                         folder=folder
                     )
 
-                # Обновление кэша
                 cached_files.append({
                     'name': original_filename,
                     'extension': os.path.splitext(original_filename)[1][1:],
@@ -121,13 +117,11 @@ def upload_file(request):
 """
 def download_file(request, file_id):
     try:
-        # Ищем файл по id
         file_record = FileUpload.objects.get(id=file_id)
         unique_name = file_record.stored_filename
         password = request.POST.get('password')
         
 
-        # Запрос к серверу для получения файла
         response = requests.get(
             f'http://0.0.0.0:8002/files/{unique_name}/',
             params={'original_filename': file_record.original_filename, 'password': password}
@@ -144,7 +138,6 @@ def download_file(request, file_id):
 
 
         if response.status_code == 200:
-            # Создаем response из полученных данных
             response = HttpResponse(
                 response.content,
                 content_type='application/octet-stream'
@@ -164,7 +157,6 @@ def download_selected_files(request):
         if not file_ids:
             return HttpResponse("Файлы не выбраны.", status=400)
 
-        # Создаем временный архив
         zip_buffer = io.BytesIO()
         with ZipFile(zip_buffer, 'w') as zip_file:
             for file_id in file_ids:
@@ -184,22 +176,18 @@ def download_selected_files(request):
 
 
 def cache_info(request):
-    # Получаем кэшированные данные из Redis
     cached_files = cache.get('file_list')
     cache_time = cache.get('cache_time')
 
-    # Если данных в кэше нет
     if cached_files is None:
         cached_files = []
         cache_time = "Данные еще не кэшированы."
 
-    # Фильтрация по дате, если форма была отправлена
     if request.method == 'POST':
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
 
         if start_date and end_date:
-            # Преобразуем строки в объекты datetime
             start_date = parse_datetime(start_date)
             end_date = parse_datetime(end_date)
 
@@ -253,22 +241,18 @@ def rename_file(request, file_id):
     
 @csrf_exempt
 def plus_size(request):
-    # Получаем данные из POST-запроса
-    user = request.POST.get('user')  # Получаем пользователя
-    file_size = request.POST.get('file')  # Получаем размер файла
+    user = request.POST.get('user')
+    file_size = request.POST.get('file')
 
-    # Проверяем, чтобы данные были
     if not user or not file_size:
         return JsonResponse({'error': 'Missing parameters'}, status=400)
 
     try:
-        file_size = int(file_size)  # Преобразуем размер файла в целое число
+        file_size = int(file_size) 
 
-        # Получаем текущий размер для пользователя
         file_size_object = FilesSize.objects.get(user=user)
         full_size = file_size_object.size
 
-        # Обновляем размер
         full_size += file_size
         file_size_object.size = full_size
         file_size_object.save()
@@ -284,16 +268,14 @@ def plus_size(request):
 
 @csrf_exempt
 def get_size(request):
-    user = request.GET.get('user')  # Получаем имя пользователя из GET-запроса
+    user = request.GET.get('user')
 
     if not user:
         return JsonResponse({'error': 'User parameter is missing'}, status=400)
 
     try:
-        # Получаем объект FilesSize или создаем новый, если его нет
         size_object, created = FilesSize.objects.get_or_create(user=user)
 
-        # Если объект был создан, его размер будет 0
         return JsonResponse({'size': size_object.size})
 
     except FilesSize.DoesNotExist:
