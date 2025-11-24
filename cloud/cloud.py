@@ -21,21 +21,14 @@ async def cloud(user: str = Form(...), password: str = Form(...), files: List[Up
     try:
         total_size = 0
         for file in files:
-            # Определите путь к файлу
             file_path = os.path.join(cloud_folder, file.filename)
             
-            # Чтение и запись файла
             with open(file_path, 'wb') as f:
                 f.write(await file.read())
             
-            # Получение размера файла
             file_size = os.path.getsize(file_path)
             total_size += file_size
             
-            
-
-
-            # Шифрование файла
             cryptography_encrypt(file_path=file_path, password=password)
 
         requests.post('http://127.0.0.1:8000/plus_size/', data={
@@ -45,7 +38,6 @@ async def cloud(user: str = Form(...), password: str = Form(...), files: List[Up
         return {"message": f"{len(files)} file(s) uploaded successfully, total size: {total_size} bytes"}
 
     except Exception as e:
-        # Логирование ошибки для отладки
         return JSONResponse(status_code=500, content={"detail": str(e)})
     
 
@@ -70,11 +62,10 @@ async def get_storage(username: str):
     response = requests.get('http://127.0.0.1:8000/get_size/', params={'user': username})
     
     if response.status_code == 200:
-        use_user = response.json().get('size', 0)  # предполагается, что API возвращает 'size'
+        use_user = response.json().get('size', 0)
     else:
-        use_user = 0  # Если запрос не удался, возвращаем 0
+        use_user = 0 
 
-    # Пример значения для свободного места для пользователя (вы можете настроить это по своему усмотрению)
     free_user = 10  
 
     # Преобразуем байты в гигабайты
