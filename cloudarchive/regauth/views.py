@@ -161,7 +161,6 @@ def reg_page(request):
             username = form.cleaned_data['username']
             avatar = form.cleaned_data['avatar']
 
-            # Проверка существующих пользователей
             if User.objects.filter(email=email).exists():
                 return JsonResponse({'error': 'User with this email already exists'})
 
@@ -172,21 +171,19 @@ def reg_page(request):
             
             image = generate_image(prompt)
 
-            # Создание пользователя
             user = User.objects.create(
                 email=email,
                 username=username,
                 password=password,
             )
             UserProfile.objects.create(username=username, image=image)
-            user.is_active = False  # Устанавливаем пользователя как неактивного
+            user.is_active = False 
             user.save()
 
             verification_code = get_random_string(length=6, allowed_chars=string.ascii_uppercase + string.digits)
 
             request.session['verification_code'] = verification_code
 
-            # Отправка письма с кодом подтверждения
             send_mail(
                 'Код подтверждения регистрации',
                 f'Ваш код подтверждения: {verification_code}',
@@ -195,7 +192,6 @@ def reg_page(request):
                 fail_silently=False,
             )
 
-            # Сохранение данных пользователя в сессии для дальнейшего использования
             request.session['user_email'] = user.email
             request.session['id'] = user.id
             request.session['username'] = user.username
@@ -216,28 +212,23 @@ def confirm_email(request):
         if verification_code and code == verification_code:
             user = User.objects.get(email=user_email)
 
-            # Активируем пользователя
             user.is_active = True
             user.save()
 
-            # Удаляем код подтверждения после успешной активации
             del request.session['verification_code']
-
-            # Авторизуем пользователя
             login(request, user)
-
-            return HttpResponseRedirect('/')  # Перенаправляем на главную страницу
+            return HttpResponseRedirect('/')
         else:
             return JsonResponse({'error': 'Неверный код подтверждения'})
 
-    return render(request, 'confirm_email.html')  # Страница для ввода кода
+    return render(request, 'confirm_email.html') 
 
 def deauth(request):
     request.session.clear()
     return HttpResponseRedirect('/guest')
 
 def get_user_storage(username):
-    """ Получает информацию о занятом месте пользователя через FastAPI """
+    """ Получает информацию о занятом месте пользователя через Cloud-service"""
     try:
         response = requests.get(f"http://0.0.0.0:8002/storage/{username}")
         response.raise_for_status()
@@ -265,7 +256,6 @@ def buy_GB(request):
                 'error_message': 'Недостаточно монет для покупки.'
             })
 
-        # Обновляем монеты и гигабайты
         tokens.NBM -= price
         tokens.save()
 
