@@ -7,7 +7,7 @@ import io
 from pathlib import Path
 from typing import List
 
-ARCHIVE_FOLDER = Path("/home/fortex/Рабочий стол/diplomka/sxron")
+ARCHIVE_FOLDER = Path("")
 CLOUD_SERVER_URL = "http://0.0.0.0:8002/cloud/"  
 
 ARCHIVE_FOLDER.mkdir(parents=True, exist_ok=True)
